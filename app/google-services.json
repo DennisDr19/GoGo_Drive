@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "878762524111",
+    "project_id": "gogo-drive-6e406",
+    "storage_bucket": "gogo-drive-6e406.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878762524111:android:5a53a222635c55bb7526ba",
+        "android_client_info": {
+          "package_name": "com.example.gogo_drive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChlgm_Lrku1B_H6xjf2Yc9CvxtRUeAKLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
