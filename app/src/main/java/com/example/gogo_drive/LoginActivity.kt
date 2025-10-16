@@ -26,7 +26,7 @@ class LoginActivity : AppCompatActivity() {
         auth = Firebase.auth
 
         // Referencias a las vistas del XML
-        // Asegúrate de que estos IDs existen en tu archivo R.layout.activity_login
+        // Asegúrate de que estos IDs existen en archivo R.layout.activity_login
         val emailEditText = findViewById<EditText>(R.id.emailEditText)
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val loginButton = findViewById<Button>(R.id.loginButton)
@@ -69,22 +69,10 @@ class LoginActivity : AppCompatActivity() {
 
         // Listener para el texto de registrarse
         registerTextView.setOnClickListener {
-            // NAVEGACIÓN: Descomenta estas líneas cuando tengas tu RegisterActivity
-            // val intent = Intent(this, RegisterActivity::class.java)
-            // startActivity(intent)
+            // NAVEGACIÓN: Se activa la navegación a RegisterActivity
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        // Comprobar si el usuario ya ha iniciado sesión al iniciar la actividad
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            // Si el usuario ya está logueado, llévalo a la pantalla principal
-            Toast.makeText(this, "Sesión ya iniciada.", Toast.LENGTH_SHORT).show()
-            // val intent = Intent(this, MainActivity::class.java)
-            // startActivity(intent)
-            // finish()
-        }
-    }
 }
