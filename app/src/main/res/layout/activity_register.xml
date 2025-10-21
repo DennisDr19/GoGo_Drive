@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="Crea tu cuenta"
+        android:text="Crear cuenta de usuario"
         android:textColor="#1E3A5F"
         android:textSize="28sp"
         android:textStyle="bold"
@@ -172,7 +172,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginTop="24dp"
-                android:text="Registrarme"
+                android:text="Registrar usuario"
                 android:textSize="18sp"
                 app:cornerRadius="15dp" />
 

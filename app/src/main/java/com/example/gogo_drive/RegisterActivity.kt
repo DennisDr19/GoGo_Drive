@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -28,7 +27,7 @@ class RegisterActivity : AppCompatActivity() {
 
         // Configuración de la barra de acción para tener un botón de "atrás"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Crear Cuenta de Estudiante"
+        supportActionBar?.title = "Crear cuenta de Estudiante"
 
         // Inicializar Firebase y Vistas
         auth = Firebase.auth
@@ -106,19 +105,12 @@ class RegisterActivity : AppCompatActivity() {
                     )
                     batch.set(personRef, personData)
 
-                    // ¡NUEVO! PASO 3: Preparar la creación del documento en "roles"
-                    val roleRef = firestore.collection("roles").document(userId)
-                    val roleData = hashMapOf(
-                        "rol" to "estudiante" // Asignación del rol único
-                    )
-                    batch.set(roleRef, roleData)
-
                     // PASO 4: Ejecutar todas las operaciones a la vez
                     batch.commit()
                         .addOnSuccessListener {
                             // ¡Éxito total! Ambas escrituras se completaron.
                             progressBar.visibility = View.GONE
-                            Log.d("RegisterActivity", "Usuario, perfil y rol creados exitosamente con batch.")
+                            Log.d("RegisterActivity", "Usuario creados exitosamente con batch.")
                             showSuccessDialogAndReturnToLogin()
                         }
                         .addOnFailureListener { batchException ->
@@ -143,12 +135,6 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-
-    // Maneja el clic en el botón de "atrás" de la barra de acción.
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
 
     // Muestra un diálogo de confirmación y regresa al Login.
     private fun showSuccessDialogAndReturnToLogin() {
