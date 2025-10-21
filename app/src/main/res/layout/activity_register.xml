@@ -98,7 +98,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/telefonoEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
