@@ -41,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
         val telefonoEditText = findViewById<EditText>(R.id.telefonoEditText)
         val carnetEditText = findViewById<EditText>(R.id.carnetEditText)
         val complementoEditText = findViewById<EditText>(R.id.complementoEditText)
+        val direccionEditText = findViewById<EditText>(R.id.direccionEditText)
         val emailEditText = findViewById<EditText>(R.id.emailEditText)
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val registerButton = findViewById<Button>(R.id.registerButton)
@@ -54,10 +55,11 @@ class RegisterActivity : AppCompatActivity() {
             val telefono = telefonoEditText.text.toString().trim()
             val carnet = carnetEditText.text.toString().trim()
             val complemento = complementoEditText.text.toString().trim()
+            val direccion = direccionEditText.text.toString().trim()
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
-            // Validaciones básicas
+            // Validaciones básicas (La dirección puede ser opcional, así que no la incluimos aquí)
             if (listOf(nombres, primerApellido, email, password, telefono, carnet).any { it.isEmpty() }) {
                 Toast.makeText(this, "Por favor, completa todos los campos obligatorios.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -69,11 +71,11 @@ class RegisterActivity : AppCompatActivity() {
 
             // Iniciar el proceso de registro
             progressBar.visibility = View.VISIBLE
-            registerUser(nombres, primerApellido, segundoApellido, telefono, carnet, complemento, email, password)
+            registerUser(nombres, primerApellido, segundoApellido, telefono, carnet, complemento, direccion, email, password)
         }
     }
 
-    private fun registerUser(nombres: String, primerApellido: String, segundoApellido: String, telefono: String, carnet: String, complemento: String, email: String, password: String) {
+    private fun registerUser(nombres: String, primerApellido: String, segundoApellido: String, telefono: String, carnet: String, complemento: String, direccion: String, email: String, password: String) {
         // PASO 1: Crear el usuario en Firebase Authentication.
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { authTask ->
@@ -87,10 +89,10 @@ class RegisterActivity : AppCompatActivity() {
                         return@addOnCompleteListener
                     }
 
-                    // --- INICIO DE LA TRANSACCIÓN POR LOTES ---
+                    // --- INICIO DE LA TRANSACCIÓN POR LOTES (BATCH) ---
                     val batch = firestore.batch()
 
-                    // PASO 2: Preparar la creación del documento en "personas"
+                    // OPERACIÓN 1: Guardar en la colección "personas"
                     val personRef = firestore.collection("personas").document(userId)
                     val personData = hashMapOf(
                         "nombres" to nombres,
@@ -99,27 +101,47 @@ class RegisterActivity : AppCompatActivity() {
                         "telefono" to telefono,
                         "carnet" to carnet,
                         "complemento" to complemento,
+                        "direccion" to direccion,
                         "correo" to email,
                         "acceso" to true,
                         "fechaCreacion" to Timestamp.now()
                     )
                     batch.set(personRef, personData)
 
-                    // PASO 4: Ejecutar todas las operaciones a la vez
+                    // OPERACIÓN 2: Guardar en la colección "estudiantes"
+                    val studentRef = firestore.collection("estudiantes").document(userId)
+                    val studentData = hashMapOf(
+                        "activo" to true,
+                        "direccion" to direccion, // Tomado del formulario
+                        "telefono" to telefono,   // Tomado del formulario
+                        "fechaInscripcion" to Timestamp.now()
+                    )
+                    batch.set(studentRef, studentData)
+
+                    //      ¡NUEVO! OPERACIÓN 3: Asignar el rol en la colección "roles"
+                    val roleRef = firestore.collection("roles").document(userId)
+                    val roleData = hashMapOf(
+                        "rol" to "estudiante" // Rol fijo para esta pantalla de registro
+                    )
+                    // Añadimos esta tercera operación al mismo lote
+                    batch.set(roleRef, roleData)
+
+
+                    // PASO FINAL: Ejecutar todas las operaciones a la vez
                     batch.commit()
                         .addOnSuccessListener {
-                            // ¡Éxito total! Ambas escrituras se completaron.
+                            // ¡Éxito total! Las 3 escrituras se completaron.
                             progressBar.visibility = View.GONE
-                            Log.d("RegisterActivity", "Usuario creados exitosamente con batch.")
+                            Log.d("RegisterActivity", "Usuario, perfil y rol creados exitosamente.")
                             showSuccessDialogAndReturnToLogin()
                         }
                         .addOnFailureListener { batchException ->
-                            // Si algo falló, ninguna escritura se realizó. La base de datos está limpia.
+                            // Si algo falló, NINGUNA de las 3 escrituras se realizó.
                             progressBar.visibility = View.GONE
                             Log.e("RegisterActivity", "FALLO en el batch. No se escribió nada en Firestore.", batchException)
-                            Toast.makeText(this, "Error al guardar el perfil. Contacta a soporte.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Error al guardar los datos de registro. Contacta a soporte.", Toast.LENGTH_LONG).show()
 
-                            // Consideración avanzada: borrar el usuario de Auth para que pueda reintentar limpiamente.
+                            // Borrar el usuario de Auth para que pueda reintentar limpiamente.
                             firebaseUser.delete().addOnCompleteListener { deleteTask ->
                                 if(deleteTask.isSuccessful) {
                                     Log.d("RegisterActivity", "Usuario de Auth eliminado tras fallo de batch.")
@@ -136,11 +158,11 @@ class RegisterActivity : AppCompatActivity() {
     }
 
 
-    // Muestra un diálogo de confirmación y regresa al Login.
+    // Muestra un diálogo de confirmación y regresa al Login (sin cambios aquí).
     private fun showSuccessDialogAndReturnToLogin() {
         AlertDialog.Builder(this)
             .setTitle("¡Registro Exitoso!")
-            .setMessage("Tu cuenta ha sido creada. Ahora serás redirigido para iniciar sesión.")
+            .setMessage("Cuenta de estudiante creada exitosamente.")
             .setPositiveButton("Aceptar") { _, _ ->
                 finish() // Cierra esta actividad y regresa a LoginActivity.
             }

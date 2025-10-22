@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity">
+    tools:context=".RegisterStaffActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
             android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Crear cuenta de Estudiante"
+            android:text="Registro de Personal"
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,10 +28,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Nombres"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/titleTextView">
+            app:layout_constraintTop_toBottomOf="@id/titleTextView"
+            android:hint="Nombres">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/nombresEditText"
@@ -46,10 +46,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Primer Apellido"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/nombresInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/nombresInputLayout"
+            android:hint="Primer Apellido">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/primerApellidoEditText"
@@ -64,10 +64,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Segundo Apellido (Opcional)"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/primerApellidoInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/primerApellidoInputLayout"
+            android:hint="Segundo Apellido (Opcional)">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/segundoApellidoEditText"
@@ -82,11 +82,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:hint="Carnet"
             app:layout_constraintEnd_toStartOf="@+id/complementoInputLayout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/segundoApellidoInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/segundoApellidoInputLayout"
+            android:layout_marginEnd="8dp"
+            android:hint="Carnet">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/carnetEditText"
@@ -100,16 +100,16 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:hint="Comp."
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/carnetInputLayout">
+            app:layout_constraintTop_toTopOf="@id/carnetInputLayout"
+            android:hint="Comp.">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/complementoEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textCapCharacters"
-                android:maxLength="2" />
+                android:maxLength="2"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -118,10 +118,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Teléfono"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/carnetInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/carnetInputLayout"
+            android:hint="Teléfono">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/telefonoEditText"
@@ -136,18 +136,60 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Dirección"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/telefonoInputLayout">
+            app:layout_constraintTop_toBottomOf="@id/telefonoInputLayout"
+            android:hint="Dirección">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/direccionEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPostalAddress"
-                android:maxLines="3" />
+                android:inputType="textPostalAddress" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/cargoInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Cargo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/direccionInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/cargoAutoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:labelFor="@+id/cargoInputLayout"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ============ NUEVO CAMPO DE TURNO AÑADIDO AQUÍ ============ -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/turnoInputLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Turno"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cargoInputLayout">
+
+            <AutoCompleteTextView
+                android:id="@+id/turnoAutoCompleteTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:labelFor="@+id/turnoInputLayout"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <!-- ========================================================== -->
+
 
         <!-- Credenciales de Acceso -->
         <TextView
@@ -159,7 +201,7 @@
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/direccionInputLayout" />
+            app:layout_constraintTop_toBottomOf="@id/turnoInputLayout" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/emailInputLayout"
@@ -167,10 +209,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Correo Electrónico"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/credentialsLabel">
+            app:layout_constraintTop_toBottomOf="@id/credentialsLabel"
+            android:hint="Correo Electrónico">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/emailEditText"
@@ -185,11 +227,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:hint="Contraseña"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/emailInputLayout"
-            app:passwordToggleEnabled="true">
+            app:passwordToggleEnabled="true"
+            android:hint="Contraseña">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/passwordEditText"
@@ -203,8 +245,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:text="Registrar Personal"
             android:padding="12dp"
-            android:text="Registrar Estudiante"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/passwordInputLayout" />

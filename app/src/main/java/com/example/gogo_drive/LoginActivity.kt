@@ -3,10 +3,10 @@ package com.example.gogo_drive
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View // ¡Importación añadida!
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar // ¡Importación añadida!
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -22,8 +22,6 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
-
-    // 1. Declara la variable para el ProgressBar
     private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,24 +31,39 @@ class LoginActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-        // 2. Conecta la variable con el ProgressBar del layout
-        progressBar = findViewById(R.id.loginProgressBar)
+        // Comprueba si ya hay un usuario con sesión activa.
+        if (auth.currentUser != null) {
+            // Muestra el ProgressBar mientras se verifica el rol y se redirige.
+            progressBar = findViewById(R.id.loginProgressBar)
+            progressBar.visibility = View.VISIBLE
 
+            // Si hay un usuario, verifica su rol y redirígelo directamente.
+            Log.d(TAG, "Usuario ya autenticado: ${auth.currentUser!!.uid}. Redirigiendo...")
+            checkUserRoleAndRedirect(auth.currentUser!!.uid)
+
+            // 'return' evita que se ejecute el resto del código del 'onCreate'.
+            // La pantalla de login no llegará a mostrarse completamente.
+            return
+        }
+        // ===============================================================
+
+        // El resto del código solo se ejecutará si NO hay una sesión activa.
+        progressBar = findViewById(R.id.loginProgressBar)
         val emailEditText = findViewById<EditText>(R.id.emailEditText)
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val loginButton = findViewById<Button>(R.id.loginButton)
-
 
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
+            // 1. VERIFICAR SI LOS CAMPOS ESTÁN LLENOS
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Por favor, ingresa correo y contraseña.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 3. MUESTRA el ProgressBar justo antes de iniciar la operación
+            // Si los campos están llenos, se procede a la autenticación.
             progressBar.visibility = View.VISIBLE
             loginUser(email, password)
         }
@@ -65,12 +78,10 @@ class LoginActivity : AppCompatActivity() {
                     if (userId != null) {
                         checkUserRoleAndRedirect(userId)
                     } else {
-                        // OCULTA el ProgressBar si hay un error
                         progressBar.visibility = View.GONE
                         Toast.makeText(this, "Error: No se pudo obtener el ID de usuario.", Toast.LENGTH_LONG).show()
                     }
                 } else {
-                    // OCULTA el ProgressBar si la autenticación falla
                     progressBar.visibility = View.GONE
                     handleLoginFailure(task.exception)
                 }
@@ -81,13 +92,12 @@ class LoginActivity : AppCompatActivity() {
         val roleDocRef = firestore.collection("roles").document(userId)
 
         roleDocRef.get().addOnSuccessListener { documentSnapshot ->
-            // OCULTA el ProgressBar ANTES de redirigir
             progressBar.visibility = View.GONE
             if (documentSnapshot.exists()) {
                 val userRole = documentSnapshot.getString("rol")
                 when (userRole) {
                     "estudiante" -> redirectToActivity(EstudentActivity::class.java, "Bienvenido, Estudiante.")
-                    "administrativo" -> redirectToActivity(AdminDashboardActivity::class.java, "Bienvenido, Administrador.")
+                    "administrador" -> redirectToActivity(AdminDashboardActivity::class.java, "Bienvenido, Administrador.")
                     "instructor" -> redirectToActivity(AdminDashboardActivity::class.java, "Bienvenido, Instructor.")
                     else -> showRoleErrorMessageAndSignOut()
                 }
@@ -95,14 +105,11 @@ class LoginActivity : AppCompatActivity() {
                 showRoleErrorMessageAndSignOut()
             }
         }.addOnFailureListener { e ->
-            // OCULTA el ProgressBar si falla la lectura de rol
             progressBar.visibility = View.GONE
             Log.e(TAG, "Error al buscar en la colección 'roles'", e)
             Toast.makeText(this, "Error al verificar el rol del usuario.", Toast.LENGTH_LONG).show()
         }
     }
-
-    // --- El resto de tus funciones auxiliares (sin cambios) ---
 
     private fun showRoleErrorMessageAndSignOut() {
         Toast.makeText(this, "Tu usuario no tiene un rol asignado. Contacta a administración.", Toast.LENGTH_LONG).show()
@@ -122,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
     private fun handleLoginFailure(exception: Exception?) {
         val errorMessage = when (exception) {
             is FirebaseAuthInvalidUserException -> "El correo electrónico no está registrado."
-            is FirebaseAuthInvalidCredentialsException -> "La contraseña es incorrecta."
+            is FirebaseAuthInvalidCredentialsException -> "El correo/contraseña incorrecto."
             else -> "Error de autenticación. Inténtalo de nuevo."
         }
         Log.w(TAG, "Error de autenticación", exception)
