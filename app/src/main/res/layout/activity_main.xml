@@ -106,7 +106,7 @@
         <com.google.android.material.card.MaterialCardView style="@style/AdminCardButton" android:id="@+id/btn_manage_classes">
           <LinearLayout style="@style/AdminCardContent">
             <ImageView style="@style/AdminCardIcon" android:src="@drawable/ic_class"/>
-            <TextView style="@style/AdminCardText" android:text="Gestionar Clases"/>
+            <TextView style="@style/AdminCardText" android:text="Registrar Clases"/>
           </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

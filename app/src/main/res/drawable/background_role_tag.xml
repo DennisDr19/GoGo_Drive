@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Este es el color de fondo del tag -->
+    <solid android:color="#757575" />
+
+    <!-- Este es el radio para hacer las esquinas redondeadas -->
+    <corners android:radius="16dp" />
+
+</shape>
