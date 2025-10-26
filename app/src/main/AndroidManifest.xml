@@ -13,6 +13,8 @@
         android:theme="@style/Theme.GoGo_Drive"
         tools:targetApi="31">
 
+
+
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -42,6 +44,9 @@
             android:exported="false"
             android:label="Registrar Vehículo"
             android:parentActivityName=".ManageCarsActivity" />
+
+        <activity android:name=".ManageLicensesActivity" />
+
     </application>
 
 </manifest>

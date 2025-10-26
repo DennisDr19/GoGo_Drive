@@ -3,8 +3,8 @@ package com.example.gogo_drive
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter // Importación necesaria
-import android.widget.AutoCompleteTextView // Importación necesaria
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -47,16 +47,14 @@ class RegisterStaffActivity : AppCompatActivity() {
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val registerButton = findViewById<Button>(R.id.registerButton)
 
-        // --- LÓGICA PARA EL MENÚ "CARGO" (Mejorado) ---
+        // --- LÓGICA PARA EL MENÚ "CARGO" ---
         // 1. Opciones en mayúscula para que se vea mejor en el UI
         val staffRoles = arrayOf("ADMINISTRADOR", "INSTRUCTOR")
         val cargoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, staffRoles)
         val cargoAutoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.cargoAutoCompleteTextView)
         cargoAutoCompleteTextView.setAdapter(cargoAdapter)
 
-        // =================================================================
-        //      AQUÍ EMPIEZA LA LÓGICA PARA EL MENÚ "TURNO"
-        // =================================================================
+        // --- LÓGICA PARA EL MENÚ "TURNO" ---
         // 1. Definir las opciones que aparecerán en el menú
         val turnos = arrayOf("MAÑANA", "TARDE", "COMPLETO")
 
@@ -88,7 +86,7 @@ class RegisterStaffActivity : AppCompatActivity() {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
-            // ---- Se añade "turno" a la validación ----
+            // ---- Se añade validación ----
             if (listOf(nombres, primerApellido, email, password, telefono, cargo, carnet, turno).any { it.isEmpty() }) {
                 Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -104,7 +102,6 @@ class RegisterStaffActivity : AppCompatActivity() {
         }
     }
 
-    // ---- La función ahora acepta el parámetro "turno" ----
     private fun registerUser(nombres: String, primerApellido: String, segundoApellido: String, carnet: String, complemento: String, telefono: String, direccion: String, cargo: String, turno: String, email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { authTask ->

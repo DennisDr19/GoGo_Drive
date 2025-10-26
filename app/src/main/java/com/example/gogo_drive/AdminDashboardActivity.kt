@@ -43,21 +43,20 @@ class AdminDashboardActivity : AppCompatActivity() {
             finish()
         }
 
-        // --- Lógica para la tarjeta "Gestionar Autos" ---
-        val registerCarCard = findViewById<MaterialCardView>(R.id.btn_register_car)
-        registerCarCard.setOnClickListener {
-            // Navega a la pantalla de registro de personal
-            val intent = Intent(this, RegisterCarActivity::class.java)
-            startActivity(intent)
-        }
+
         val gestionarAutosCard = findViewById<MaterialCardView>(R.id.btn_register_car)
 
         // 2. Configura un listener para que reaccione al clic
         gestionarAutosCard.setOnClickListener {
             // 3. Crea la "intención" de abrir la nueva pantalla
             val intent = Intent(this, ManageCarsActivity::class.java)
-
             // 4. Inicia la nueva pantalla
+            startActivity(intent)
+        }
+
+        val manageLicensesCard = findViewById<MaterialCardView>(R.id.btn_manage_licenses)
+        manageLicensesCard.setOnClickListener {
+            val intent = Intent(this, ManageLicensesActivity::class.java)
             startActivity(intent)
         }
 

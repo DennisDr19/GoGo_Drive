@@ -118,19 +118,18 @@ class RegisterActivity : AppCompatActivity() {
                     )
                     batch.set(studentRef, studentData)
 
-                    //      ¡NUEVO! OPERACIÓN 3: Asignar el rol en la colección "roles"
+                    // OPERACIÓN 3: Asignar el rol en la colección "roles"
                     val roleRef = firestore.collection("roles").document(userId)
                     val roleData = hashMapOf(
-                        "rol" to "estudiante" // Rol fijo para esta pantalla de registro
+                        "rol" to "estudiante"
                     )
-                    // Añadimos esta tercera operación al mismo lote
                     batch.set(roleRef, roleData)
 
 
-                    // PASO FINAL: Ejecutar todas las operaciones a la vez
+                    // Ejecutar todas las operaciones a la vez
                     batch.commit()
                         .addOnSuccessListener {
-                            // ¡Éxito total! Las 3 escrituras se completaron.
+                            // Las 3 escrituras se completaron.
                             progressBar.visibility = View.GONE
                             Log.d("RegisterActivity", "Usuario, perfil y rol creados exitosamente.")
                             showSuccessDialogAndReturnToLogin()
@@ -158,7 +157,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
 
-    // Muestra un diálogo de confirmación y regresa al Login (sin cambios aquí).
+    // Muestra un diálogo de confirmación y regresa al Login.
     private fun showSuccessDialogAndReturnToLogin() {
         AlertDialog.Builder(this)
             .setTitle("¡Registro Exitoso!")

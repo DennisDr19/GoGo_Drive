@@ -67,7 +67,7 @@
                 android:textSize="20sp"
                 tools:text="Toyota Yaris (2023)" />
 
-            <!-- Número Interno -->
+            <!-- Número taller -->
             <TextView
                 android:id="@+id/numeroTallerTextView"
                 android:layout_width="wrap_content"

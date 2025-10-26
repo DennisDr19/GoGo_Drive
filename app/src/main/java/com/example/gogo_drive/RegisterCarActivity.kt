@@ -41,8 +41,6 @@ class RegisterCarActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register_car)
 
-        // --- Flujo de inicialización CORRECTO ---
-
         // 1. Inicializar Firebase y TODAS las vistas primero para evitar errores de objeto nulo.
         firestore = FirebaseFirestore.getInstance()
         initializeViews()
@@ -51,17 +49,13 @@ class RegisterCarActivity : AppCompatActivity() {
         setupEstadoDropdown()
         toolbar.setNavigationOnClickListener { finish() } // Botón de atrás en la toolbar
         registerCarButton.setOnClickListener {
-            // Este método ahora decidirá si registrar o actualizar
             handleRegistrationOrUpdate()
         }
-
-        // 3. Comprobar si estamos en modo edición y actualizar la UI.
-        //    Esto se hace al final, cuando todas las vistas ya existen y son seguras de usar.
         checkIfEditMode()
     }
 
     private fun initializeViews() {
-        // Asegúrate de que todos estos IDs existen en tu activity_register_car.xml
+
         toolbar = findViewById(R.id.toolbar)
         placaEditText = findViewById(R.id.placaEditText)
         marcaEditText = findViewById(R.id.marcaEditText)
@@ -72,10 +66,6 @@ class RegisterCarActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
     }
 
-    /**
-     * Comprueba el Intent para ver si se le pasó un objeto 'Car'.
-     * Si es así, configura la UI para el modo de edición.
-     */
     private fun checkIfEditMode() {
         // Recuperamos el objeto Car que ManageCarsActivity nos envió
         carToEdit = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
