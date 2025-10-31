@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Nombre Completo y Rol -->
+        <TextView
+            android:id="@+id/textView_nombre_staff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textView_rol_staff"
+            android:layout_marginEnd="8dp"
+            tools:text="Dennis Fabricio Apaza" />
+
+        <TextView
+            android:id="@+id/textView_rol_staff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chip_background"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:textColor="?attr/colorPrimary"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/textView_nombre_staff"
+            app:layout_constraintBottom_toBottomOf="@id/textView_nombre_staff"
+            tools:text="ADMIN" />
+
+        <!-- Correo -->
+        <ImageView
+            android:id="@+id/icon_email_staff"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_student"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView_nombre_staff"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de correo" />
+
+        <TextView
+            android:id="@+id/textView_email_staff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_email_staff"
+            app:layout_constraintStart_toEndOf="@id/icon_email_staff"
+            app:layout_constraintTop_toTopOf="@id/icon_email_staff"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="dennis.apaza@example.com" />
+
+        <!-- Teléfono -->
+        <ImageView
+            android:id="@+id/icon_telefono_staff"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_phone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_email_staff"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de teléfono" />
+
+        <TextView
+            android:id="@+id/textView_telefono_staff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_telefono_staff"
+            app:layout_constraintStart_toEndOf="@id/icon_telefono_staff"
+            app:layout_constraintTop_toTopOf="@id/icon_telefono_staff"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="77712345" />
+
+        <!-- Turno -->
+        <ImageView
+            android:id="@+id/icon_turno_staff"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_time"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_telefono_staff"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de turno" />
+
+        <TextView
+            android:id="@+id/textView_turno_staff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_turno_staff"
+            app:layout_constraintStart_toEndOf="@id/icon_turno_staff"
+            app:layout_constraintTop_toTopOf="@id/icon_turno_staff"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Turno: MAÑANA" />
+
+
+        <!-- Separador -->
+        <View
+            android:id="@+id/divider_staff"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@id/textView_turno_staff"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Control de Acceso -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_acceso_staff"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Acceso a la aplicación"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@id/divider_staff"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

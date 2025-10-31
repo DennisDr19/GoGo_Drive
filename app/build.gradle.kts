@@ -1,10 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-
-    //Firebase
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -17,7 +14,6 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,32 +36,30 @@ android {
 }
 
 dependencies {
-    // Versiones estables y compatibles de AndroidX
+    // Dependencias de AndroidX
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.activity:activity:1.9.0") // Usar activity-ktx si usas viewModels
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4") // Versión estable
-    implementation("com.google.android.material:material:1.12.0") // Versión estable
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.activity:activity:1.9.0")
 
-    // Credenciales (las versiones estaban bien)
+    // Credenciales de Google
     implementation("androidx.credentials:credentials:1.5.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
 
-    // Firebase - ¡IMPORTANTE! Usar el BoM correctamente
-    // Importa la lista de materiales (BoM). Esto asegura que todas las librerías
-    // de Firebase sean compatibles entre sí.
+    // --- MANEJO DE FIREBASE (CORREGIDO) ---
+    // 1. Usa la BoM (Bill of Materials) para que Firebase gestione las versiones.
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
 
-    // Ahora, añade las dependencias de Firebase que necesites SIN especificar la versión.
-    // El BoM se encargará de seleccionar la versión correcta.
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-database")
-    implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-auth-ktx") // Añadida para funciones de extensión
+    // 2. Declara solo las dependencias que necesitas, SIN versión.
+    implementation("com.google.firebase:firebase-auth")      // Para autenticación
+    implementation("com.google.firebase:firebase-firestore") // Para la base de datos Firestore
 
-    // Google Identity (estaba bien)
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
-    testImplementation(libs.junit.junit) // Versión estable
+    // --- DEPENDENCIA DE COMPATIBILIDAD (CLAVE) ---
+    // 3. Forzamos una versión compatible de Play Services Auth para evitar errores silenciosos.
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
-    // La dependencia de kotlin-stdlib ya no es necesaria, el plugin la incluye.
+    // Dependencias de Test
+    testImplementation(libs.junit.junit)
 }

@@ -79,10 +79,7 @@ class RegisterStaffActivity : AppCompatActivity() {
             val telefono = telefonoEditText.text.toString().trim()
             val direccion = direccionEditText.text.toString().trim()
             val cargo = cargoAutoCompleteTextView.text.toString().trim()
-
-            // ---- Se lee el valor del nuevo menú "Turno" ----
             val turno = turnoAutoCompleteTextView.text.toString().trim()
-
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
@@ -95,9 +92,7 @@ class RegisterStaffActivity : AppCompatActivity() {
                 Toast.makeText(this, "La contraseña debe tener al menos 8 caracteres.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-
             progressBar.visibility = View.VISIBLE
-            // ---- Se pasa "turno" a la función de registro ----
             registerUser(nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email, password)
         }
     }
@@ -110,7 +105,6 @@ class RegisterStaffActivity : AppCompatActivity() {
                     val newUserId = newUser?.uid
 
                     if (newUserId != null) {
-                        // ---- Se pasa "turno" a la función que guarda en Firestore ----
                         saveUserDataToFirestore(newUserId, nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email)
                     } else {
                         progressBar.visibility = View.GONE
@@ -141,22 +135,12 @@ class RegisterStaffActivity : AppCompatActivity() {
             "direccion" to direccion,
             "correo" to email,
             "acceso" to true,
-            "fechaCreacion" to Timestamp.now()
+            "fechaCreacion" to Timestamp.now(),
+            "turno" to turno
         )
         batch.set(personRef, personData)
 
-        // 2. Documento en 'personal'
-        val staffRef = firestore.collection("personal").document(userId)
-        val staffData = hashMapOf(
-            "turno" to turno, // ---- Se añade el campo "turno" al documento ----
-            "activo" to true,
-            "telefono" to telefono,
-            "direccion" to direccion,
-            "fechaContratacion" to Timestamp.now()
-        )
-        batch.set(staffRef, staffData)
-
-        // 3. Documento en 'roles'
+        // 2. Documento en 'roles'
         val roleRef = firestore.collection("roles").document(userId)
         val roleData = hashMapOf("rol" to rolParaDb) // Se guarda "administrador" o "instructor"
         batch.set(roleRef, roleData)

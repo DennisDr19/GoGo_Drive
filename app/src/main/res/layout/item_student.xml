@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Fila 1: Nombre Completo -->
+        <TextView
+            android:id="@+id/textView_nombre"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Dennis Fabricio Apaza" />
+
+        <!-- Fila 2: Correo -->
+        <ImageView
+            android:id="@+id/icon_email"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_student"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView_nombre"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de correo" />
+
+        <TextView
+            android:id="@+id/textView_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_email"
+            app:layout_constraintStart_toEndOf="@id/icon_email"
+            app:layout_constraintTop_toTopOf="@id/icon_email"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="dennis.apaza@example.com" />
+
+        <!-- Fila 3: Teléfono -->
+        <ImageView
+            android:id="@+id/icon_telefono"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_phone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_email"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de teléfono" />
+
+        <TextView
+            android:id="@+id/textView_telefono"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_telefono"
+            app:layout_constraintStart_toEndOf="@id/icon_telefono"
+            app:layout_constraintTop_toTopOf="@id/icon_telefono"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="77712345" />
+
+        <!-- Fila 4: Carnet y Complemento -->
+        <ImageView
+            android:id="@+id/icon_carnet"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_license"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_telefono"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de carnet" />
+
+        <TextView
+            android:id="@+id/textView_carnet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_carnet"
+            app:layout_constraintStart_toEndOf="@id/icon_carnet"
+            app:layout_constraintTop_toTopOf="@id/icon_carnet"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="1234567 LP" />
+
+        <!-- Fila 5: Dirección -->
+        <ImageView
+            android:id="@+id/icon_direccion"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_ubication"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icon_carnet"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de dirección" />
+
+        <TextView
+            android:id="@+id/textView_direccion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_direccion"
+            app:layout_constraintStart_toEndOf="@id/icon_direccion"
+            app:layout_constraintTop_toTopOf="@id/icon_direccion"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Av. Arce #2512, Zona San Jorge" />
+
+        <!-- Fila 6: Fecha de Creación (NUEVA FILA) -->
+        <ImageView
+            android:id="@+id/icon_fecha"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_calendar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView_direccion"
+            app:tint="?android:attr/textColorSecondary"
+            android:contentDescription="Icono de fecha de registro" />
+
+        <TextView
+            android:id="@+id/textView_fecha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/icon_fecha"
+            app:layout_constraintStart_toEndOf="@id/icon_fecha"
+            app:layout_constraintTop_toTopOf="@id/icon_fecha"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Registrado el: 01/01/2024" />
+
+        <!-- Separador visual -->
+        <View
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@id/textView_fecha"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Fila 7: Control de Acceso -->
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_acceso"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Acceso a la aplicación"
+            android:checked="true"
+            app:layout_constraintTop_toBottomOf="@id/divider"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

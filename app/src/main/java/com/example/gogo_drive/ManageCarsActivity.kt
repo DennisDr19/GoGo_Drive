@@ -1,5 +1,3 @@
-// Contenido para el archivo: ManageCarsActivity.kt
-
 package com.example.gogo_drive
 
 import android.content.Intent

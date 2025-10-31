@@ -1,3 +1,4 @@
+// Archivo: app/src/main/java/com/example/gogo_drive/AdminDashboardActivity.kt
 package com.example.gogo_drive
 
 import android.content.Intent
@@ -18,49 +19,56 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // --- Lógica para la tarjeta "Registrar Estudiante" ---
-        val registerStudentCard = findViewById<MaterialCardView>(R.id.btn_register_student)
-        registerStudentCard.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
-        }
-         // --- Lógica para la tarjeta "Registrar Personal" ---
-        val registerStaffCard = findViewById<MaterialCardView>(R.id.btn_register_staff)
-        registerStaffCard.setOnClickListener {
-            // Navega a la pantalla de registro de personal
-            val intent = Intent(this, RegisterStaffActivity::class.java)
-            startActivity(intent)
+        // --- SECCIÓN: Gestión de Usuarios ---
+
+        // Botón: Registrar Estudiante
+        findViewById<MaterialCardView>(R.id.btn_register_student).setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        // --- Lógica para el botón de cierre de sesión ---
-        val logoutButton = findViewById<Button>(R.id.logoutButton)
-        logoutButton.setOnClickListener {
-            Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
+        // Botón: Registrar Personal
+        findViewById<MaterialCardView>(R.id.btn_register_staff).setOnClickListener {
+            startActivity(Intent(this, RegisterStaffActivity::class.java))
+        }
+
+        // Botón: Gestion de Estudiantes
+        findViewById<MaterialCardView>(R.id.btn_manage_students).setOnClickListener {
+            startActivity(Intent(this, ManageStudentActivity::class.java))
+        }
+
+        // Botón: Gestion de Personal
+        findViewById<MaterialCardView>(R.id.btn_manage_staff).setOnClickListener {
+            startActivity(Intent(this, ManageStudentActivity::class.java))
+        }
+
+        // --- SECCIÓN: Gestión de Clases y Vehículos ---
+
+        // Botón: Gestionar Autos
+        findViewById<MaterialCardView>(R.id.btn_register_car).setOnClickListener {
+            startActivity(Intent(this, ManageCarsActivity::class.java))
+        }
+
+        // --- SECCIÓN: Administración General ---
+
+        // Botón: Gestionar Licencias
+        findViewById<MaterialCardView>(R.id.btn_manage_licenses).setOnClickListener {
+            startActivity(Intent(this, ManageLicensesActivity::class.java))
+        }
+
+        // Botón: Registrar Pagos
+        findViewById<MaterialCardView>(R.id.btn_register_payment).setOnClickListener {
+            Toast.makeText(this, "Registrar Pagos (en construcción)", Toast.LENGTH_SHORT).show()
+        }
+
+
+        // --- Botón de Cierre de Sesión ---
+        findViewById<Button>(R.id.logoutButton).setOnClickListener {
             auth.signOut()
+            Toast.makeText(this, "Cerrando sesión...", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         }
-
-
-        val gestionarAutosCard = findViewById<MaterialCardView>(R.id.btn_register_car)
-
-        // 2. Configura un listener para que reaccione al clic
-        gestionarAutosCard.setOnClickListener {
-            // 3. Crea la "intención" de abrir la nueva pantalla
-            val intent = Intent(this, ManageCarsActivity::class.java)
-            // 4. Inicia la nueva pantalla
-            startActivity(intent)
-        }
-
-        val manageLicensesCard = findViewById<MaterialCardView>(R.id.btn_manage_licenses)
-        manageLicensesCard.setOnClickListener {
-            val intent = Intent(this, ManageLicensesActivity::class.java)
-            startActivity(intent)
-        }
-
-        // Aquí puedes añadir los listeners para las otras tarjetas del panel...
-        // findViewById<MaterialCardView>(R.id.btn_manage_roles).setOnClickListener { ... }
     }
 }

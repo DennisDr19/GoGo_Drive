@@ -8,7 +8,7 @@
     android:background="#F0F4F8"
     tools:context=".AdminDashboardActivity">
 
-  <!-- 1. Barra superior con el título del panel (Sin cambios) -->
+  <!-- 1. Barra superior con el título del panel -->
   <com.google.android.material.appbar.AppBarLayout
       android:id="@+id/appBarLayout"
       android:layout_width="match_parent"
@@ -25,7 +25,7 @@
 
   </com.google.android.material.appbar.AppBarLayout>
 
-  <!-- 2. Contenido principal con la cuadrícula de opciones (Sin cambios) -->
+  <!-- 2. Contenido principal con la cuadrícula de opciones -->
   <androidx.core.widget.NestedScrollView
       android:layout_width="match_parent"
       android:layout_height="match_parent"
@@ -39,9 +39,9 @@
 
       <TextView
           style="@style/AdminSectionTitle"
-          android:layout_width="212dp"
+          android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:text="Gestión de Usuarios y Roles"/>
+          android:text="Gestión de Usuarios"/>
 
       <GridLayout
           android:layout_width="match_parent"
@@ -65,11 +65,23 @@
           </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Botón Crear/Borrar Cargos -->
-        <com.google.android.material.card.MaterialCardView style="@style/AdminCardButton" android:id="@+id/btn_manage_roles">
+        <!-- ======================================================= -->
+        <!-- =====        BOTONES ACTUALIZADOS                 ===== -->
+        <!-- ======================================================= -->
+
+        <!-- Botón Gestionar Estudiantes -->
+        <com.google.android.material.card.MaterialCardView style="@style/AdminCardButton" android:id="@+id/btn_manage_students">
           <LinearLayout style="@style/AdminCardContent">
             <ImageView style="@style/AdminCardIcon" android:src="@drawable/ic_manage_accounts"/>
-            <TextView style="@style/AdminCardText" android:text="Gestionar Cargos"/>
+            <TextView style="@style/AdminCardText" android:text="Gestionar Estudiantes"/>
+          </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botón Gestionar Personal -->
+        <com.google.android.material.card.MaterialCardView style="@style/AdminCardButton" android:id="@+id/btn_manage_staff">
+          <LinearLayout style="@style/AdminCardContent">
+            <ImageView style="@style/AdminCardIcon" android:src="@drawable/ic_manage_staff"/>
+            <TextView style="@style/AdminCardText" android:text="Gestionar Personal"/>
           </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -86,7 +98,7 @@
           android:layout_height="wrap_content"
           android:columnCount="2">
 
-        <!-- Botón Registrar Autos -->
+        <!-- Botón Gestionar Autos -->
         <com.google.android.material.card.MaterialCardView style="@style/AdminCardButton" android:id="@+id/btn_register_car">
           <LinearLayout style="@style/AdminCardContent">
             <ImageView style="@style/AdminCardIcon" android:src="@drawable/ic_car"/>
@@ -99,14 +111,6 @@
           <LinearLayout style="@style/AdminCardContent">
             <ImageView style="@style/AdminCardIcon" android:src="@drawable/ic_assign_car"/>
             <TextView style="@style/AdminCardText" android:text="Asignar Vehículo"/>
-          </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Botón Gestionar Clases -->
-        <com.google.android.material.card.MaterialCardView style="@style/AdminCardButton" android:id="@+id/btn_manage_classes">
-          <LinearLayout style="@style/AdminCardContent">
-            <ImageView style="@style/AdminCardIcon" android:src="@drawable/ic_class"/>
-            <TextView style="@style/AdminCardText" android:text="Registrar Clases"/>
           </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
