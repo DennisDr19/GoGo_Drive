@@ -35,7 +35,7 @@ class ManageStudentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Apuntando al layout correcto que ya tienes
-        setContentView(R.layout.activity_gestion_student)
+        setContentView(R.layout.activity_manage_student)
 
         setupUI()
         setupListeners()
@@ -49,7 +49,7 @@ class ManageStudentActivity : AppCompatActivity() {
 
         firestore = Firebase.firestore
         recyclerView = findViewById(R.id.recyclerView_students)
-        progressBar = findViewById(R.id.progressBar_gestion)
+        progressBar = findViewById(R.id.progressBar)
         toggleGroup = findViewById(R.id.toggleButton_filter)
 
         studentAdapter = StudentAdapter { uid, newState ->
@@ -65,8 +65,8 @@ class ManageStudentActivity : AppCompatActivity() {
         toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) {
                 currentFilter = when (checkedId) {
-                    R.id.button_con_acceso -> Filter.WITH_ACCESS
-                    R.id.button_sin_acceso -> Filter.NO_ACCESS
+                    R.id.button_activos -> Filter.WITH_ACCESS
+                    R.id.button_inactivos -> Filter.NO_ACCESS
                     else -> Filter.ALL
                 }
                 applyFilterAndUpdateUI()
