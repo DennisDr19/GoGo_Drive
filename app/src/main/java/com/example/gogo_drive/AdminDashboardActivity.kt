@@ -38,7 +38,7 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         // Botón: Gestion de Personal
         findViewById<MaterialCardView>(R.id.btn_manage_staff).setOnClickListener {
-            startActivity(Intent(this, ManageStudentActivity::class.java))
+            startActivity(Intent(this, ManageStaffActivity::class.java))
         }
 
         // --- SECCIÓN: Gestión de Clases y Vehículos ---
