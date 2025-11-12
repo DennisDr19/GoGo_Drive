@@ -4,141 +4,208 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.FirebaseApp
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.app
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var progressBar: ProgressBar
+    private val TAG = "RegisterActivity"
 
-    // Declara todos los EditText
-    private lateinit var nombresEditText: EditText
-    private lateinit var primerApellidoEditText: EditText
-    private lateinit var segundoApellidoEditText: EditText
-    private lateinit var telefonoEditText: EditText
-    private lateinit var carnetEditText: EditText
-    private lateinit var complementoEditText: EditText
-    private lateinit var direccionEditText: EditText
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
+    // Referencias a los TextInputLayout para mostrar errores
+    private lateinit var nombresLayout: TextInputLayout
+    private lateinit var primerApellidoLayout: TextInputLayout
+    private lateinit var segundoApellidoLayout: TextInputLayout
+    private lateinit var carnetLayout: TextInputLayout
+    private lateinit var complementoLayout: TextInputLayout
+    private lateinit var telefonoLayout: TextInputLayout
+    private lateinit var direccionLayout: TextInputLayout
+    private lateinit var emailLayout: TextInputLayout
+    private lateinit var passwordLayout: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Crear cuenta de Estudiante"
+        supportActionBar?.title = "Registrar Estudiante"
 
-        // Inicializa Firebase y las Vistas
-        auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
-        progressBar = findViewById(R.id.progressBar)
 
-        nombresEditText = findViewById(R.id.nombresEditText)
-        primerApellidoEditText = findViewById(R.id.primerApellidoEditText)
-        segundoApellidoEditText = findViewById(R.id.segundoApellidoEditText)
-        telefonoEditText = findViewById(R.id.telefonoEditText)
-        carnetEditText = findViewById(R.id.carnetEditText)
-        complementoEditText = findViewById(R.id.complementoEditText)
-        direccionEditText = findViewById(R.id.direccionEditText)
-        emailEditText = findViewById(R.id.emailEditText)
-        passwordEditText = findViewById(R.id.passwordEditText)
+        initializeViews()
 
         val registerButton = findViewById<Button>(R.id.registerButton)
         registerButton.setOnClickListener {
-            handleRegistration()
+            if (validateForm()) {
+                progressBar.visibility = View.VISIBLE
+                registerStudent()
+            }
         }
     }
 
-    private fun handleRegistration() {
-        val nombres = nombresEditText.text.toString().trim()
-        val primerApellido = primerApellidoEditText.text.toString().trim()
-        val segundoApellido = segundoApellidoEditText.text.toString().trim()
-        val telefono = telefonoEditText.text.toString().trim()
-        val carnet = carnetEditText.text.toString().trim()
-        val complemento = complementoEditText.text.toString().trim()
-        val direccion = direccionEditText.text.toString().trim()
-        val email = emailEditText.text.toString().trim()
-        val password = passwordEditText.text.toString().trim()
+    private fun initializeViews() {
+        progressBar = findViewById(R.id.progressBar)
+        nombresLayout = findViewById(R.id.nombresInputLayout)
+        primerApellidoLayout = findViewById(R.id.primerApellidoInputLayout)
+        segundoApellidoLayout = findViewById(R.id.segundoApellidoInputLayout)
+        carnetLayout = findViewById(R.id.carnetInputLayout)
+        complementoLayout = findViewById(R.id.complementoInputLayout)
+        telefonoLayout = findViewById(R.id.telefonoInputLayout)
+        direccionLayout = findViewById(R.id.direccionInputLayout)
+        emailLayout = findViewById(R.id.emailInputLayout)
+        passwordLayout = findViewById(R.id.passwordInputLayout)
+    }
 
-        // Validación robusta
-        if (listOf(nombres, primerApellido, email, password, telefono, carnet).any { it.isBlank() }) {
-            Toast.makeText(this, "Por favor, completa todos los campos obligatorios.", Toast.LENGTH_LONG).show()
-            return
+    private fun validateForm(): Boolean {
+        var isValid = true
+
+        listOf(
+            nombresLayout, primerApellidoLayout, segundoApellidoLayout,
+            carnetLayout, complementoLayout, telefonoLayout, direccionLayout,
+            emailLayout, passwordLayout
+        ).forEach { it.error = null }
+
+        val nombre = nombresLayout.editText?.text.toString().trim()
+        val apellido1 = primerApellidoLayout.editText?.text.toString().trim()
+        val apellido2 = segundoApellidoLayout.editText?.text.toString().trim()
+
+        // --- LÍNEA CORREGIDA: Se añade ñ y Ñ a la Regex ---
+        if (nombre.isEmpty() || !nombre.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) || nombre.length > 50) {
+            nombresLayout.error = "Nombre inválido (solo texto, máx. 50)"
+            isValid = false
         }
+        // --- LÍNEA CORREGIDA: Se añade ñ y Ñ a la Regex ---
+        if (apellido1.isEmpty() || !apellido1.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) || apellido1.length > 50) {
+            primerApellidoLayout.error = "Apellido inválido (solo texto, máx. 50)"
+            isValid = false
+        }
+        // --- LÍNEA CORREGIDA: Se añade ñ y Ñ a la Regex ---
+        if (apellido2.isNotEmpty() && (!apellido2.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) || apellido2.length > 50)) {
+            segundoApellidoLayout.error = "Apellido inválido (solo texto, máx. 50)"
+            isValid = false
+        }
+
+        val carnet = carnetLayout.editText?.text.toString().trim()
+        if (!carnet.matches(Regex("^[0-9]{7}$"))) {
+            carnetLayout.error = "Carnet inválido (debe tener 7 números)"
+            isValid = false
+        }
+
+        val complemento = complementoLayout.editText?.text.toString().trim()
+        if (complemento.length > 2) {
+            complementoLayout.error = "Máx. 2 caracteres"
+            isValid = false
+        }
+
+        val telefono = telefonoLayout.editText?.text.toString().trim()
+        if (!telefono.matches(Regex("^[0-9]{8}$"))) {
+            telefonoLayout.error = "Teléfono inválido (debe tener 8 números)"
+            isValid = false
+        }
+
+        val email = emailLayout.editText?.text.toString().trim()
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailLayout.error = "Formato de correo inválido"
+            isValid = false
+        }
+
+        val password = passwordLayout.editText?.text.toString()
         if (password.length < 8) {
-            Toast.makeText(this, "La contraseña debe tener al menos 8 caracteres.", Toast.LENGTH_LONG).show()
-            return
+            passwordLayout.error = "La contraseña debe tener al menos 8 caracteres"
+            isValid = false
         }
 
-        progressBar.visibility = View.VISIBLE
+        if (!isValid) {
+            Toast.makeText(this, "Por favor, corrige los errores marcados", Toast.LENGTH_SHORT).show()
+        }
 
-        // El proceso de registro
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this) { authTask ->
-            if (authTask.isSuccessful) {
-                val userId = auth.currentUser?.uid
-                if (userId == null) {
-                    progressBar.visibility = View.GONE
-                    Toast.makeText(this, "Error crítico: No se pudo obtener el ID de usuario.", Toast.LENGTH_LONG).show()
-                    return@addOnCompleteListener
+        return isValid
+    }
+
+    private fun registerStudent() {
+        val email = emailLayout.editText?.text.toString().trim()
+        val password = passwordLayout.editText?.text.toString()
+
+        val firebaseAppSecondary = Firebase.app("secondary")
+        val tempAuth = FirebaseAuth.getInstance(firebaseAppSecondary)
+
+        tempAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { authTask ->
+                if (authTask.isSuccessful) {
+                    val newUser = authTask.result?.user
+                    if (newUser != null) {
+                        saveStudentDataToFirestore(newUser.uid)
+                    } else {
+                        handleRegistrationError("Error crítico: No se pudo obtener el ID del nuevo usuario.")
+                    }
+                    tempAuth.signOut()
+                } else {
+                    handleRegistrationError("Error al crear usuario: ${authTask.exception?.message}")
+                    emailLayout.error = "Este correo ya está en uso o es inválido."
                 }
-
-                val userData = hashMapOf(
-                    "nombres" to nombres,
-                    "primerApellido" to primerApellido,
-                    "segundoApellido" to segundoApellido,
-                    "correo" to email,
-                    "telefono" to telefono,
-                    "carnet" to carnet,
-                    "complemento" to complemento,
-                    "direccion" to direccion,
-                    "acceso" to true,
-                    "fechaCreacion" to Timestamp.now()
-                )
-
-                // Escribe el mapa de datos directamente en la colección 'personas'
-                firestore.collection("personas").document(userId)
-                    .set(userData)
-                    .addOnSuccessListener {
-                        progressBar.visibility = View.GONE
-                        Log.d("RegisterActivity", "¡ÉXITO! Usuario creado y perfil guardado en 'personas'.")
-                        showSuccessDialogAndFinish()
-                    }
-                    .addOnFailureListener { firestoreException ->
-                        // Si falla la escritura en Firestore, borramos el usuario de Auth para evitar inconsistencias
-                        progressBar.visibility = View.GONE
-                        Log.e("RegisterActivity", "FALLO al escribir en Firestore. Revirtiendo creación de usuario.", firestoreException)
-                        Toast.makeText(this, "Error al guardar los datos. Contacta a soporte.", Toast.LENGTH_LONG).show()
-
-                        auth.currentUser?.delete()
-                    }
-
-            } else {
-                progressBar.visibility = View.GONE
-                Toast.makeText(this, "Error de registro: ${authTask.exception?.message}", Toast.LENGTH_LONG).show()
             }
-        }
+    }
+
+    private fun saveStudentDataToFirestore(userId: String) {
+        val batch = firestore.batch()
+
+        val personRef = firestore.collection("personas").document(userId)
+        val personData = hashMapOf(
+            "nombres" to nombresLayout.editText?.text.toString().trim(),
+            "primerApellido" to primerApellidoLayout.editText?.text.toString().trim(),
+            "segundoApellido" to segundoApellidoLayout.editText?.text.toString().trim(),
+            "carnet" to carnetLayout.editText?.text.toString().trim(),
+            "complemento" to complementoLayout.editText?.text.toString().trim(),
+            "telefono" to telefonoLayout.editText?.text.toString().trim(),
+            "direccion" to direccionLayout.editText?.text.toString().trim(),
+            "correo" to emailLayout.editText?.text.toString().trim(),
+            "acceso" to true,
+            "fechaCreacion" to Timestamp.now()
+        )
+        batch.set(personRef, personData)
+
+        val roleRef = firestore.collection("roles").document(userId)
+        val roleData = hashMapOf("rol" to "estudiante")
+        batch.set(roleRef, roleData)
+
+        batch.commit()
+            .addOnSuccessListener {
+                progressBar.visibility = View.GONE
+                showSuccessDialogAndFinish()
+            }
+            .addOnFailureListener { e ->
+                handleRegistrationError("Error al guardar los datos. Contacta a soporte.", e)
+                Firebase.app("secondary").let { FirebaseAuth.getInstance(it).currentUser?.delete() }
+            }
+    }
+
+    private fun handleRegistrationError(message: String, exception: Exception? = null) {
+        progressBar.visibility = View.GONE
+        Log.e(TAG, message, exception)
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun showSuccessDialogAndFinish() {
         AlertDialog.Builder(this)
             .setTitle("¡Registro Exitoso!")
-            .setMessage("La cuenta ha sido creada correctamente.")
+            .setMessage("La cuenta del nuevo estudiante ha sido creada.")
             .setPositiveButton("Aceptar") { _, _ -> finish() }
             .setCancelable(false)
             .show()
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        finish()
+        onBackPressedDispatcher.onBackPressed()
         return true
     }
 }
