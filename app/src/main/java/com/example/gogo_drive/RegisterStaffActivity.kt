@@ -93,9 +93,9 @@ class RegisterStaffActivity : AppCompatActivity() {
             emailLayout, passwordLayout
         ).forEach { it.error = null }
 
-        // --- VALIDACIONES MEJORADAS ---
+        // --- VALIDACIONES ---
 
-        // Nombres y Apellidos (límite 50, solo texto, con ñ)
+        // Nombres y Apellidos (límite 50)
         val nombre = nombresLayout.editText?.text.toString().trim()
         val apellido1 = primerApellidoLayout.editText?.text.toString().trim()
         val apellido2 = segundoApellidoLayout.editText?.text.toString().trim()

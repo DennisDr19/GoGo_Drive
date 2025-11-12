@@ -34,18 +34,18 @@ class ManageStudentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Apuntando al layout correcto que ya tienes
+
         setContentView(R.layout.activity_manage_student)
 
         setupUI()
         setupListeners()
-        // El nombre de la función ahora es más específico
+
         loadStudentsFromFirestore()
     }
 
     private fun setupUI() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "Gestión de Estudiantes" // Título más específico
+        supportActionBar?.title = "Gestión de Estudiantes"
 
         firestore = Firebase.firestore
         recyclerView = findViewById(R.id.recyclerView_students)
