@@ -11,6 +11,9 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ktx.app
+
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -19,7 +22,6 @@ import com.google.firebase.ktx.Firebase
 
 class RegisterStaffActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
     private lateinit var progressBar: ProgressBar
     private val TAG = "RegisterStaffActivity"
@@ -31,7 +33,6 @@ class RegisterStaffActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Registrar Personal"
 
-        auth = Firebase.auth
         firestore = FirebaseFirestore.getInstance()
 
         // Referencias a las vistas del formulario
@@ -47,30 +48,20 @@ class RegisterStaffActivity : AppCompatActivity() {
         val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
         val registerButton = findViewById<Button>(R.id.registerButton)
 
-        // --- LÓGICA PARA EL MENÚ "CARGO" ---
-        // 1. Opciones en mayúscula para que se vea mejor en el UI
+        // Lógica para menús desplegables
         val staffRoles = arrayOf("ADMINISTRADOR", "INSTRUCTOR")
         val cargoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, staffRoles)
         val cargoAutoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.cargoAutoCompleteTextView)
         cargoAutoCompleteTextView.setAdapter(cargoAdapter)
 
-        // --- LÓGICA PARA EL MENÚ "TURNO" ---
-        // 1. Definir las opciones que aparecerán en el menú
         val turnos = arrayOf("MAÑANA", "TARDE", "COMPLETO")
-
-        // 2. Crear un "adaptador" que conecta las opciones con el menú
         val turnoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, turnos)
-
-        // 3. Encontrar el AutoCompleteTextView por su ID
         val turnoAutoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.turnoAutoCompleteTextView)
-
-        // 4. Asignar el adaptador al menú para que muestre las opciones
         turnoAutoCompleteTextView.setAdapter(turnoAdapter)
-        // =================================================================
-
 
         registerButton.setOnClickListener {
             // Recoger todos los datos del formulario
+
             val nombres = nombresEditText.text.toString().trim()
             val primerApellido = primerApellidoEditText.text.toString().trim()
             val segundoApellido = segundoApellidoEditText.text.toString().trim()
@@ -83,47 +74,79 @@ class RegisterStaffActivity : AppCompatActivity() {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
 
-            // ---- Se añade validación ----
+            // --- INICIO DE VALIDACIONES ---
             if (listOf(nombres, primerApellido, email, password, telefono, cargo, carnet, turno).any { it.isEmpty() }) {
-                Toast.makeText(this, "Por favor, completa todos los campos.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Por favor, completa todos los campos obligatorios.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            if (!nombres.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))) {
+                Toast.makeText(this, "El nombre solo debe contener letras y espacios.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!primerApellido.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))) {
+                Toast.makeText(this, "El apellido solo debe contener letras y espacios.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (segundoApellido.isNotEmpty() && !segundoApellido.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))) {
+                Toast.makeText(this, "El segundo apellido solo debe contener letras y espacios.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!carnet.matches(Regex("^[0-9]+$"))) {
+                Toast.makeText(this, "El carnet solo debe contener números.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (complemento.length > 5) {
+                Toast.makeText(this, "El complemento no debe exceder los 5 caracteres.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!telefono.matches(Regex("^[0-9]+$"))) {
+                Toast.makeText(this, "El teléfono solo debe contener números.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(this, "El formato del correo electrónico no es válido.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if (password.length < 8) {
                 Toast.makeText(this, "La contraseña debe tener al menos 8 caracteres.", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
+            // --- FIN DE VALIDACIONES ---
+
             progressBar.visibility = View.VISIBLE
             registerUser(nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email, password)
         }
     }
 
     private fun registerUser(nombres: String, primerApellido: String, segundoApellido: String, carnet: String, complemento: String, telefono: String, direccion: String, cargo: String, turno: String, email: String, password: String) {
-        auth.createUserWithEmailAndPassword(email, password)
+        // ¡CLAVE! Usa la app secundaria para el registro
+        val firebaseAppSecondary = Firebase.app("secondary")
+        val tempAuth = FirebaseAuth.getInstance(firebaseAppSecondary)
+
+        tempAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { authTask ->
                 if (authTask.isSuccessful) {
                     val newUser = authTask.result?.user
-                    val newUserId = newUser?.uid
-
-                    if (newUserId != null) {
-                        saveUserDataToFirestore(newUserId, nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email)
+                    if (newUser != null) {
+                        saveUserDataToFirestore(newUser.uid, nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email)
                     } else {
                         progressBar.visibility = View.GONE
                         Toast.makeText(this, "Error crítico: No se pudo obtener el ID del nuevo usuario.", Toast.LENGTH_LONG).show()
                     }
+                    // Importante: Cierra la sesión temporal para no dejarla activa
+                    tempAuth.signOut()
                 } else {
                     progressBar.visibility = View.GONE
-                    Log.e(TAG, "Error en createUserWithEmailAndPassword", authTask.exception)
-                    Toast.makeText(this, "Error al crear usuario en Auth: ${authTask.exception?.message}", Toast.LENGTH_LONG).show()
+                    Log.e(TAG, "Error en createUserWithEmailAndPassword con tempAuth", authTask.exception)
+                    Toast.makeText(this, "Error al crear usuario: ${authTask.exception?.message}", Toast.LENGTH_LONG).show()
                 }
             }
     }
 
-    // ---- La función ahora acepta el parámetro "turno" ----
     private fun saveUserDataToFirestore(userId: String, nombres: String, primerApellido: String, segundoApellido: String, carnet: String, complemento: String, telefono: String, direccion: String, cargo: String, turno: String, email: String) {
         val batch = firestore.batch()
-        val rolParaDb = cargo.lowercase() // Se convierte a minúscula solo para la colección 'roles'
+        val rolParaDb = cargo.lowercase()
 
-        // 1. Documento en 'personas'
         val personRef = firestore.collection("personas").document(userId)
         val personData = hashMapOf(
             "nombres" to nombres,
@@ -140,9 +163,8 @@ class RegisterStaffActivity : AppCompatActivity() {
         )
         batch.set(personRef, personData)
 
-        // 2. Documento en 'roles'
         val roleRef = firestore.collection("roles").document(userId)
-        val roleData = hashMapOf("rol" to rolParaDb) // Se guarda "administrador" o "instructor"
+        val roleData = hashMapOf("rol" to rolParaDb)
         batch.set(roleRef, roleData)
 
         batch.commit()
@@ -154,7 +176,8 @@ class RegisterStaffActivity : AppCompatActivity() {
                 progressBar.visibility = View.GONE
                 Log.e(TAG, "Error al ejecutar el batch de Firestore.", e)
                 Toast.makeText(this, "Error al guardar los datos. Contacta a soporte.", Toast.LENGTH_LONG).show()
-                auth.currentUser?.delete()
+                // En un escenario de producción, se debería borrar el usuario de Auth si Firestore falla.
+                Firebase.app("secondary").let { FirebaseAuth.getInstance(it).currentUser?.delete() }
             }
     }
 

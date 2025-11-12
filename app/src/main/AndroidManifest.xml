@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Asegúrate de tener el permiso de INTERNET -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -35,7 +39,9 @@
         <!-- Declaración para la Activity de registro Staff -->
         <activity
             android:name=".RegisterStaffActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="Registrar Personal"
+            android:parentActivityName=".ManageStaffActivity"/>
 
         <!-- Declaración para la Activity Administracion de Autos -->
         <activity
@@ -48,7 +54,9 @@
             android:label="Registrar Vehículo"
             android:parentActivityName=".ManageCarsActivity" />
 
-        <activity android:name=".ManageLicensesActivity" />
+        <activity
+            android:name=".ManageLicensesActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ManageStudentActivity"
@@ -56,6 +64,7 @@
             android:label="Gestión de Estudiantes"
             android:parentActivityName=".AdminDashboardActivity" />
 
+        <!-- LÍNEA CORREGIDA: Se eliminó el cursor del nombre -->
         <activity
             android:name=".ManageStaffActivity"
             android:exported="false"
