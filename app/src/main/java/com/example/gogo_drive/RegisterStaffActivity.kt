@@ -6,25 +6,36 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.FirebaseApp
-import com.google.firebase.ktx.app
-
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.app
 
 class RegisterStaffActivity : AppCompatActivity() {
 
     private lateinit var firestore: FirebaseFirestore
     private lateinit var progressBar: ProgressBar
     private val TAG = "RegisterStaffActivity"
+
+    // Referencias a los TextInputLayout para mostrar errores
+    private lateinit var nombresLayout: TextInputLayout
+    private lateinit var primerApellidoLayout: TextInputLayout
+    private lateinit var segundoApellidoLayout: TextInputLayout
+    private lateinit var carnetLayout: TextInputLayout
+    private lateinit var complementoLayout: TextInputLayout
+    private lateinit var telefonoLayout: TextInputLayout
+    private lateinit var direccionLayout: TextInputLayout
+    private lateinit var cargoLayout: TextInputLayout
+    private lateinit var turnoLayout: TextInputLayout
+    private lateinit var emailLayout: TextInputLayout
+    private lateinit var passwordLayout: TextInputLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,91 +46,126 @@ class RegisterStaffActivity : AppCompatActivity() {
 
         firestore = FirebaseFirestore.getInstance()
 
-        // Referencias a las vistas del formulario
-        progressBar = findViewById(R.id.progressBar)
-        val nombresEditText = findViewById<EditText>(R.id.nombresEditText)
-        val primerApellidoEditText = findViewById<EditText>(R.id.primerApellidoEditText)
-        val segundoApellidoEditText = findViewById<EditText>(R.id.segundoApellidoEditText)
-        val carnetEditText = findViewById<EditText>(R.id.carnetEditText)
-        val complementoEditText = findViewById<EditText>(R.id.complementoEditText)
-        val telefonoEditText = findViewById<EditText>(R.id.telefonoEditText)
-        val direccionEditText = findViewById<EditText>(R.id.direccionEditText)
-        val emailEditText = findViewById<EditText>(R.id.emailEditText)
-        val passwordEditText = findViewById<EditText>(R.id.passwordEditText)
+        initializeViews()
+        setupDropdowns()
+
         val registerButton = findViewById<Button>(R.id.registerButton)
-
-        // Lógica para menús desplegables
-        val staffRoles = arrayOf("ADMINISTRADOR", "INSTRUCTOR")
-        val cargoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, staffRoles)
-        val cargoAutoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.cargoAutoCompleteTextView)
-        cargoAutoCompleteTextView.setAdapter(cargoAdapter)
-
-        val turnos = arrayOf("MAÑANA", "TARDE", "COMPLETO")
-        val turnoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, turnos)
-        val turnoAutoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.turnoAutoCompleteTextView)
-        turnoAutoCompleteTextView.setAdapter(turnoAdapter)
-
         registerButton.setOnClickListener {
-            // Recoger todos los datos del formulario
-
-            val nombres = nombresEditText.text.toString().trim()
-            val primerApellido = primerApellidoEditText.text.toString().trim()
-            val segundoApellido = segundoApellidoEditText.text.toString().trim()
-            val carnet = carnetEditText.text.toString().trim()
-            val complemento = complementoEditText.text.toString().trim()
-            val telefono = telefonoEditText.text.toString().trim()
-            val direccion = direccionEditText.text.toString().trim()
-            val cargo = cargoAutoCompleteTextView.text.toString().trim()
-            val turno = turnoAutoCompleteTextView.text.toString().trim()
-            val email = emailEditText.text.toString().trim()
-            val password = passwordEditText.text.toString().trim()
-
-            // --- INICIO DE VALIDACIONES ---
-            if (listOf(nombres, primerApellido, email, password, telefono, cargo, carnet, turno).any { it.isEmpty() }) {
-                Toast.makeText(this, "Por favor, completa todos los campos obligatorios.", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
+            if (validateForm()) {
+                progressBar.visibility = View.VISIBLE
+                registerStaff()
             }
-            if (!nombres.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))) {
-                Toast.makeText(this, "El nombre solo debe contener letras y espacios.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (!primerApellido.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))) {
-                Toast.makeText(this, "El apellido solo debe contener letras y espacios.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (segundoApellido.isNotEmpty() && !segundoApellido.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$"))) {
-                Toast.makeText(this, "El segundo apellido solo debe contener letras y espacios.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (!carnet.matches(Regex("^[0-9]+$"))) {
-                Toast.makeText(this, "El carnet solo debe contener números.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (complemento.length > 5) {
-                Toast.makeText(this, "El complemento no debe exceder los 5 caracteres.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (!telefono.matches(Regex("^[0-9]+$"))) {
-                Toast.makeText(this, "El teléfono solo debe contener números.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(this, "El formato del correo electrónico no es válido.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (password.length < 8) {
-                Toast.makeText(this, "La contraseña debe tener al menos 8 caracteres.", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-            // --- FIN DE VALIDACIONES ---
-
-            progressBar.visibility = View.VISIBLE
-            registerUser(nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email, password)
         }
     }
 
-    private fun registerUser(nombres: String, primerApellido: String, segundoApellido: String, carnet: String, complemento: String, telefono: String, direccion: String, cargo: String, turno: String, email: String, password: String) {
-        // ¡CLAVE! Usa la app secundaria para el registro
+    private fun initializeViews() {
+        progressBar = findViewById(R.id.progressBar)
+        nombresLayout = findViewById(R.id.nombresInputLayout)
+        primerApellidoLayout = findViewById(R.id.primerApellidoInputLayout)
+        segundoApellidoLayout = findViewById(R.id.segundoApellidoInputLayout)
+        carnetLayout = findViewById(R.id.carnetInputLayout)
+        complementoLayout = findViewById(R.id.complementoInputLayout)
+        telefonoLayout = findViewById(R.id.telefonoInputLayout)
+        direccionLayout = findViewById(R.id.direccionInputLayout)
+        cargoLayout = findViewById(R.id.cargoInputLayout)
+        turnoLayout = findViewById(R.id.turnoInputLayout)
+        emailLayout = findViewById(R.id.emailInputLayout)
+        passwordLayout = findViewById(R.id.passwordInputLayout)
+    }
+
+    private fun setupDropdowns() {
+        val staffRoles = arrayOf("ADMINISTRADOR", "INSTRUCTOR")
+        val cargoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, staffRoles)
+        (cargoLayout.editText as? AutoCompleteTextView)?.setAdapter(cargoAdapter)
+
+        val turnos = arrayOf("MAÑANA", "TARDE", "COMPLETO")
+        val turnoAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, turnos)
+        (turnoLayout.editText as? AutoCompleteTextView)?.setAdapter(turnoAdapter)
+    }
+
+    private fun validateForm(): Boolean {
+        var isValid = true
+
+        // Limpiar errores previos
+        listOf(
+            nombresLayout, primerApellidoLayout, segundoApellidoLayout, carnetLayout,
+            complementoLayout, telefonoLayout, direccionLayout, cargoLayout, turnoLayout,
+            emailLayout, passwordLayout
+        ).forEach { it.error = null }
+
+        // --- VALIDACIONES MEJORADAS ---
+
+        // Nombres y Apellidos (límite 50, solo texto, con ñ)
+        val nombre = nombresLayout.editText?.text.toString().trim()
+        val apellido1 = primerApellidoLayout.editText?.text.toString().trim()
+        val apellido2 = segundoApellidoLayout.editText?.text.toString().trim()
+
+        if (nombre.isEmpty() || !nombre.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) || nombre.length > 50) {
+            nombresLayout.error = "Nombre inválido (solo texto, máx. 50)"
+            isValid = false
+        }
+        if (apellido1.isEmpty() || !apellido1.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) || apellido1.length > 50) {
+            primerApellidoLayout.error = "Apellido inválido (solo texto, máx. 50)"
+            isValid = false
+        }
+        if (apellido2.isNotEmpty() && (!apellido2.matches(Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$")) || apellido2.length > 50)) {
+            segundoApellidoLayout.error = "Apellido inválido (solo texto, máx. 50)"
+            isValid = false
+        }
+
+        // Carnet (exactamente 7 números)
+        val carnet = carnetLayout.editText?.text.toString().trim()
+        if (!carnet.matches(Regex("^[0-9]{7}$"))) {
+            carnetLayout.error = "Carnet inválido (debe tener 7 números)"
+            isValid = false
+        }
+
+        // Complemento (opcional, máximo 2 caracteres)
+        val complemento = complementoLayout.editText?.text.toString().trim()
+        if (complemento.length > 2) {
+            complementoLayout.error = "Máx. 2 caracteres"
+            isValid = false
+        }
+
+        // Teléfono (exactamente 8 números)
+        val telefono = telefonoLayout.editText?.text.toString().trim()
+        if (!telefono.matches(Regex("^[0-9]{8}$"))) {
+            telefonoLayout.error = "Teléfono inválido (debe tener 8 números)"
+            isValid = false
+        }
+
+        // Cargo y Turno (no pueden estar vacíos)
+        if (cargoLayout.editText?.text.toString().isEmpty()) {
+            cargoLayout.error = "Debes seleccionar un cargo"
+            isValid = false
+        }
+        if (turnoLayout.editText?.text.toString().isEmpty()) {
+            turnoLayout.error = "Debes seleccionar un turno"
+            isValid = false
+        }
+
+        // Correo y Contraseña
+        val email = emailLayout.editText?.text.toString().trim()
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailLayout.error = "Formato de correo inválido"
+            isValid = false
+        }
+        val password = passwordLayout.editText?.text.toString()
+        if (password.length < 8) {
+            passwordLayout.error = "Mínimo 8 caracteres"
+            isValid = false
+        }
+
+        if (!isValid) {
+            Toast.makeText(this, "Por favor, corrige los errores marcados", Toast.LENGTH_SHORT).show()
+        }
+        return isValid
+    }
+
+    private fun registerStaff() {
+        val email = emailLayout.editText?.text.toString().trim()
+        val password = passwordLayout.editText?.text.toString()
+
         val firebaseAppSecondary = Firebase.app("secondary")
         val tempAuth = FirebaseAuth.getInstance(firebaseAppSecondary)
 
@@ -128,41 +174,40 @@ class RegisterStaffActivity : AppCompatActivity() {
                 if (authTask.isSuccessful) {
                     val newUser = authTask.result?.user
                     if (newUser != null) {
-                        saveUserDataToFirestore(newUser.uid, nombres, primerApellido, segundoApellido, carnet, complemento, telefono, direccion, cargo, turno, email)
+                        saveUserDataToFirestore(newUser.uid)
                     } else {
-                        progressBar.visibility = View.GONE
-                        Toast.makeText(this, "Error crítico: No se pudo obtener el ID del nuevo usuario.", Toast.LENGTH_LONG).show()
+                        handleRegistrationError("Error crítico: No se pudo obtener el ID del nuevo usuario.")
                     }
-                    // Importante: Cierra la sesión temporal para no dejarla activa
                     tempAuth.signOut()
                 } else {
-                    progressBar.visibility = View.GONE
-                    Log.e(TAG, "Error en createUserWithEmailAndPassword con tempAuth", authTask.exception)
-                    Toast.makeText(this, "Error al crear usuario: ${authTask.exception?.message}", Toast.LENGTH_LONG).show()
+                    handleRegistrationError("Error al crear usuario: ${authTask.exception?.message}")
+                    emailLayout.error = "Este correo ya está en uso o es inválido."
                 }
             }
     }
 
-    private fun saveUserDataToFirestore(userId: String, nombres: String, primerApellido: String, segundoApellido: String, carnet: String, complemento: String, telefono: String, direccion: String, cargo: String, turno: String, email: String) {
+    private fun saveUserDataToFirestore(userId: String) {
         val batch = firestore.batch()
-        val rolParaDb = cargo.lowercase()
+        val rolParaDb = cargoLayout.editText?.text.toString().trim().lowercase()
 
+        // Documento en 'personas'
         val personRef = firestore.collection("personas").document(userId)
         val personData = hashMapOf(
-            "nombres" to nombres,
-            "primerApellido" to primerApellido,
-            "segundoApellido" to segundoApellido,
-            "carnet" to carnet,
-            "complemento" to complemento,
-            "telefono" to telefono,
-            "direccion" to direccion,
-            "correo" to email,
+            "nombres" to nombresLayout.editText?.text.toString().trim(),
+            "primerApellido" to primerApellidoLayout.editText?.text.toString().trim(),
+            "segundoApellido" to segundoApellidoLayout.editText?.text.toString().trim(),
+            "carnet" to carnetLayout.editText?.text.toString().trim(),
+            "complemento" to complementoLayout.editText?.text.toString().trim(),
+            "telefono" to telefonoLayout.editText?.text.toString().trim(),
+            "direccion" to direccionLayout.editText?.text.toString().trim(),
+            "correo" to emailLayout.editText?.text.toString().trim(),
             "acceso" to true,
             "fechaCreacion" to Timestamp.now(),
-            "turno" to turno
+            "turno" to turnoLayout.editText?.text.toString().trim()
         )
         batch.set(personRef, personData)
 
+        // Documento en 'roles'
         val roleRef = firestore.collection("roles").document(userId)
         val roleData = hashMapOf("rol" to rolParaDb)
         batch.set(roleRef, roleData)
@@ -173,12 +218,15 @@ class RegisterStaffActivity : AppCompatActivity() {
                 showSuccessDialogAndFinish()
             }
             .addOnFailureListener { e ->
-                progressBar.visibility = View.GONE
-                Log.e(TAG, "Error al ejecutar el batch de Firestore.", e)
-                Toast.makeText(this, "Error al guardar los datos. Contacta a soporte.", Toast.LENGTH_LONG).show()
-                // En un escenario de producción, se debería borrar el usuario de Auth si Firestore falla.
+                handleRegistrationError("Error al guardar los datos.", e)
                 Firebase.app("secondary").let { FirebaseAuth.getInstance(it).currentUser?.delete() }
             }
+    }
+
+    private fun handleRegistrationError(message: String, exception: Exception? = null) {
+        progressBar.visibility = View.GONE
+        Log.e(TAG, message, exception)
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
     }
 
     private fun showSuccessDialogAndFinish() {
